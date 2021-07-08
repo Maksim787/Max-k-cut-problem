@@ -20,10 +20,7 @@ void merge(
                     res[i + j] = r[i];
                     ++i;
                 } else {
-                    if (r[i] == INT32_MIN) {
-                        res[i + j] = v;
-                        ++j;
-                    } else if (data[v] >= data[r[i]]) {
+                    if (r[i] == INT32_MIN || data[v] >= data[r[i]]) {
                         res[i + j] = v;
                         ++j;
                     } else {
@@ -43,10 +40,7 @@ void merge(
                     res[i + j] = l[i];
                     ++i;
                 } else {
-                    if (l[i] == INT32_MIN) {
-                        res[i + j] = v;
-                        ++j;
-                    } else if (data[v] >= data[l[i]]) {
+                    if (l[i] == INT32_MIN || data[v] >= data[l[i]]) {
                         res[i + j] = v;
                         ++j;
                     } else {
@@ -128,8 +122,8 @@ public:
         data = std::move(v);
         mark = std::vector<int[3]>(data.size() + 1);
         for (int i = data.size(); i != 0; --i) {
-            mark[i][0] = mark[i][1] = mark[i][2] = -2e9;
-            int v = (i - 1 == home_coalition ? -2e9 : i - 1);
+            mark[i][0] = mark[i][1] = mark[i][2] = INT32_MIN;
+            int v = (i - 1 == home_coalition ? INT32_MIN : i - 1);
             if (2 * i + 1 < mark.size()) {
                 merge(mark[i], data, v, mark[2 * i], mark[2 * i + 1]);
             } else if (2 * i < mark.size()) { 
@@ -151,8 +145,8 @@ public:
     void set(int key, double value) {
         data[key] = value;
         while (key > 0) {
-            mark[key][0] = mark[key][1] = mark[key][2] = -2e9;
-            int v = (key - 1 == home_coalition ? -2e9 : key - 1);
+            mark[key][0] = mark[key][1] = mark[key][2] = INT32_MIN;
+            int v = (key - 1 == home_coalition ? INT32_MIN : key - 1);
             if (2 * key + 1 < mark.size()) {
                 merge(mark[key], data, v, mark[2 * key], mark[2 * key + 1]);
             } else if (2 * key < mark.size()) {
