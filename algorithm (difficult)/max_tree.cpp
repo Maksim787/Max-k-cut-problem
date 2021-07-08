@@ -48,13 +48,13 @@ public:
     void set(int key, double value) {
         data[key] = value;
         while (key > 0) {
-            mark[key] = -1;
+            mark[key] = INT32_MIN;
             if (key - 1 != home_coalition_v && key - 1 != home_coalition_u) {
                 mark[key] = key - 1;
             }
             if (2 * key <= data.size()) {
-                if (mark[2 * key] != -1) {
-                    if (mark[key] == -1) {
+                if (mark[2 * key] != INT32_MIN) {
+                    if (mark[key] == INT32_MIN) {
                         mark[key] = mark[2 * key];
                     } else if (data[mark[2 * key]] > data[mark[key]]) {
                         mark[key] = mark[2 * key];
@@ -62,8 +62,8 @@ public:
                 }
             }
             if (2 * key + 1 <= data.size()) {
-                if (mark[2 * key + 1] != -1) {
-                    if (mark[key] == -1) {
+                if (mark[2 * key + 1] != INT32_MIN) {
+                    if (mark[key] == INT32_MIN) {
                         mark[key] = mark[2 * key + 1];
                     } else if (data[mark[2 * key + 1]] > data[mark[key]]) {
                         mark[key] = mark[2 * key + 1];
