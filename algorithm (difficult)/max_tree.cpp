@@ -1,7 +1,7 @@
 #include <vector>
 
 class MaxTree {
-private:
+public:
     std::vector<double> data;
     int home_coalition_v;
     int home_coalition_u;
@@ -16,13 +16,13 @@ public:
         home_coalition_u = new_hcu;
         mark.resize(data.size() + 1);
         for (int i = data.size(); i != 0; --i) {
-            mark[i] = -1;
+            mark[i] = INT32_MIN;
             if (i - 1 != home_coalition_v && i - 1 != home_coalition_u) {
                 mark[i] = i - 1;
             }
             if (2 * i <= data.size()) {
-                if (mark[2 * i] != -1) {
-                    if (mark[i] == -1) {
+                if (mark[2 * i] != INT32_MIN) {
+                    if (mark[i] == INT32_MIN) {
                         mark[i] = mark[2 * i];
                     } else if (data[mark[2 * i]] > data[mark[i]]) {
                         mark[i] = mark[2 * i];
@@ -30,8 +30,8 @@ public:
                 }
             }
             if (2 * i + 1 <= data.size()) {
-                if (mark[2 * i + 1] != -1) {
-                    if (mark[i] == -1) {
+                if (mark[2 * i + 1] != INT32_MIN) {
+                    if (mark[i] == INT32_MIN) {
                         mark[i] = mark[2 * i + 1];
                     } else if (data[mark[2 * i + 1]] > data[mark[i]]) {
                         mark[i] = mark[2 * i + 1];

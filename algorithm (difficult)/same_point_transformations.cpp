@@ -22,15 +22,17 @@ public:
         int c2 = c;
         for (int u = 0; u != data.size(); ++u) {
             for (int w = 0; w != u; ++w) {
-                if (u == v) {
-                    data[u][w].set_hcv(c2);
-                }
-                if (w == v) {
-                    data[u][w].set_hcu(c2);
-                }
                 data[u][w].set(c1, data[u][w].at(c1) - graph[u][v] - graph[w][v]);
                 data[u][w].set(c2, data[u][w].at(c2) + graph[u][v] + graph[w][v]);
             }
+        }
+        for (int u = 0; u != v; ++u) {
+            auto x = data[v][u].data;
+            data[v][u].build(std::move(x), c2, data[v][u].hcu());
+        }
+        for (int u = v + 1; u != data.size(); ++u) {
+            auto x = data[u][v].data;
+            data[u][v].build(std::move(x), data[u][v].hcv(), c2);
         }
     }
 
