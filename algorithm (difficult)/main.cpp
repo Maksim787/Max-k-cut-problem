@@ -82,7 +82,7 @@ public:
     }
 
     static double random() {
-        return static_cast<double>(rand() % 100000) / 100000;
+        return static_cast<double>(rand() % 1000) / 1000;
     }
 
     void run(int n_iter) {
@@ -126,7 +126,7 @@ public:
             tabu_set.clear();
             tabu_list.clear();
             // делаем o3 и o4 не более omega раз или пока не найдём лучший результат
-#if defined(op3) && defined(op4)
+#if defined(op3) || defined(op4)
             while (move_cnt < omega && win <= last_local_optimum) {
                 if (random() < p) {
 #ifdef op3
@@ -212,9 +212,12 @@ public:
                 }
                 int from_second = person_coalition[second_person];
                 int to_first, to_second;
-                const int* potential_to_first = coalition_interaction[first_person].max();
-                const int* potential_to_second = coalition_interaction[second_person].max();
-
+                const int* potential_to_first_ptr = coalition_interaction[first_person].max();
+                const int* potential_to_second_ptr = coalition_interaction[second_person].max();
+                int potential_to_first[3];
+                int potential_to_second[3];
+                std::copy(potential_to_first_ptr, potential_to_first_ptr + 3, potential_to_first);
+                std::copy(potential_to_second_ptr, potential_to_second_ptr + 3, potential_to_second);
                 if (from_first == from_second) {
                     // case 3
                     // два игрока из одной коалиции идут в разные коалиции
@@ -256,6 +259,19 @@ public:
                         to_second = potential_to_second[1];
                     }
                     o2_updater.update(first_person, from_first, to_first, second_person, from_second, to_second);
+
+                    // case 7
+                    // первый и второй идут из разных в разные
+                    for (int one_ind : potential_to_first) {
+                        for (int two_ind : potential_to_second) {
+                            to_first = one_ind;
+                            to_second = two_ind;
+                            if (to_first != from_second && to_second != from_first && to_first != to_second) {
+                                o2_updater.update(first_person, from_first, to_first, second_person, from_second, to_second);
+                                break;
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -365,6 +381,7 @@ public:
     void move(int moved_person, int to_coalition) {
 #ifdef MOVE_OUTPUT
         std::cout << "move:\nmoved_person = " << moved_person << "\n";
+        std::cout << "from_coalition = " << person_coalition[moved_person] << "\n";
         std::cout << "to_coalition = " << to_coalition << "\n" << std::endl;
 #endif
         coalition_interaction.update(moved_person, to_coalition);
