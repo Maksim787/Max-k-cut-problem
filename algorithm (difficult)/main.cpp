@@ -33,6 +33,7 @@ public:
     const int xi;
     // gamma - число применений o5 подряд
     const int gamma;
+    const double eps = 1e-9;
     double win = 0;
     double best_win = 0;
     int not_improved_cnt = 0;
@@ -101,7 +102,7 @@ public:
                 inc_win = o1();
                 auto end = std::chrono::steady_clock::now();
                 time1 += std::chrono::duration_cast<std::chrono::nanoseconds>(end - begin).count() / 1e6;
-                if (inc_win <= 0) {
+                if (inc_win <= eps) {
                     break;
                 }
                 win += inc_win;
@@ -114,7 +115,7 @@ public:
                 inc_win = o2();
                 auto end = std::chrono::steady_clock::now();
                 time2 += std::chrono::duration_cast<std::chrono::nanoseconds>(end - begin).count() / 1e6;
-                if (inc_win <= 0) {
+                if (inc_win <= eps) {
                     break;
                 }
                 win += inc_win;
@@ -211,7 +212,7 @@ public:
                 max_coalition = to_coalition;
             }
         }
-        if (max_win <= 0) {
+        if (max_win <= eps) {
             return max_win;
         }
 #ifdef OPERATION_OUTPUT
@@ -311,7 +312,7 @@ public:
                 }
             }
         }
-        if (o2_updater.max_win <= 0) {
+        if (o2_updater.max_win <= eps) {
             return o2_updater.max_win;
         }
 #ifdef OPERATION_OUTPUT
