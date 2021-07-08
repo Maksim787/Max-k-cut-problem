@@ -413,7 +413,7 @@ int main() {
     int n_iter = 100;
     s.run(n_iter);
     s.print_coalitions();
-    std::cin.get()
+    std::cin.get();
 
     return 0;
 }
