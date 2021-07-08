@@ -9,8 +9,8 @@
 #include <unordered_set>
 #include <vector>
 
-//#define MOVE_OUTPUT
-//#define OPERATION_OUTPUT
+#define MOVE_OUTPUT
+#define OPERATION_OUTPUT
 #define op1
 #define op2
 #define op3
