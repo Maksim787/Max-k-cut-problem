@@ -54,7 +54,7 @@ public:
         // построение coalition_interaction
         std::vector<ThreeMaxTree> coalition_interaction_init(n);
         for (int first_person = 0; first_person < n; ++first_person) {
-            std::vector<double> three_max_tree_init(n);
+            std::vector<double> three_max_tree_init(k);
             for (int second_person = 0; second_person < n; ++second_person) {
                 three_max_tree_init[0] += w[first_person][second_person];
                 win += w[first_person][second_person];
@@ -283,7 +283,7 @@ public:
         double max_win = INT32_MIN;
         int max_person, max_coalition;
         for (int person = 0; person < n; ++person) {
-            if (tabu_set.contains(person)) {
+            if (tabu_set.count(person) != 0) {
                 continue;
             }
             int from_coalition = person_coalition[person];
