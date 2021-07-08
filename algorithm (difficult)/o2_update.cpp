@@ -1,4 +1,5 @@
-#include "potential_benefits.cpp"
+#include <iostream>
+#include <exception>
 
 struct o2Updater {
     const PB_Vector& coalition_interaction;
