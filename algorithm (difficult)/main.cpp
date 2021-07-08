@@ -176,7 +176,7 @@ public:
         std::cout << "n = " << n << ", " << "k = " << k << "\n";
         for (int person = 0; person < n; ++person) {
             std::cout << person << ": " << person_coalition_answer[person] << "\n";
-            file << person << " " << person_coalition_answer[person] << "\n";
+            file << person_coalition_answer[person] << " ";
         }
         std::cout << "best_win = " << best_win << "\n";
         std::cout << "o1_cnt = " << o1_cnt << "\n";
