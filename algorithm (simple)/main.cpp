@@ -1,10 +1,10 @@
+#include <chrono>
 #include <cstdlib>
-#include <ctime>
-#include <fstream>
-#include <iostream>
 #include <deque>
+#include <fstream>
+#include <iomanip>
+#include <iostream>
 #include <unordered_set>
-#include <utility>
 #include <vector>
 
 //#define MOVE_OUTPUT
@@ -27,6 +27,8 @@ public:
     double best_win = 0;
     int not_improved_cnt = 0;
     int time = 0;
+    int o1_cnt = 0, o2_cnt = 0, o3_cnt = 0, o4_cnt = 0, o5_cnt = 0;
+    double time1 = 0, time2 = 0, time3 = 0, time4 = 0, time5 = 0;
     std::vector<std::vector<double>> w;
     std::vector<std::vector<double>> coalition_interaction; // arr[i][j] сумма рёбер из i игрока в j коалицию
     std::vector<int> person_coalition; // arr[i] - коалиция i игрока
@@ -61,7 +63,10 @@ public:
             double inc_win;
             // пока улучшается делаем o1
             while (true) {
+                auto begin = std::chrono::steady_clock::now();
                 inc_win = o1();
+                auto end = std::chrono::steady_clock::now();
+                time1 += std::chrono::duration_cast<std::chrono::nanoseconds>(end - begin).count() / 1e6;
                 if (inc_win <= 0) {
                     break;
                 }
@@ -69,7 +74,10 @@ public:
             }
             // пока улучшается делаем o2
             while (true) {
+                auto begin = std::chrono::steady_clock::now();
                 inc_win = o2();
+                auto end = std::chrono::steady_clock::now();
+                time2 += std::chrono::duration_cast<std::chrono::nanoseconds>(end - begin).count() / 1e6;
                 if (inc_win <= 0) {
                     break;
                 }
@@ -93,15 +101,24 @@ public:
             // делаем o3 и o4 не более omega раз или пока не найдём лучший результат
             while (move_cnt < omega && win <= last_local_optimum) {
                 if (random() < p) {
+                    auto begin = std::chrono::steady_clock::now();
                     win += o3();
+                    auto end = std::chrono::steady_clock::now();
+                    time3 += std::chrono::duration_cast<std::chrono::nanoseconds>(end - begin).count() / 1e6;
                 } else {
+                    auto begin = std::chrono::steady_clock::now();
                     win += o4();
+                    auto end = std::chrono::steady_clock::now();
+                    time4 += std::chrono::duration_cast<std::chrono::nanoseconds>(end - begin).count() / 1e6;
                 }
                 ++move_cnt;
             }
             if (not_improved_cnt >= xi) {
                 for (int i = 0; i < gamma; ++i) {
+                    auto begin = std::chrono::steady_clock::now();
                     win += o5();
+                    auto end = std::chrono::steady_clock::now();
+                    time5 += std::chrono::duration_cast<std::chrono::nanoseconds>(end - begin).count() / 1e6;
                 }
                 not_improved_cnt = xi;
             }
@@ -114,12 +131,25 @@ public:
             std::cout << person << ": " << person_coalition_answer[person] << "\n";
         }
         std::cout << "best_win = " << best_win << "\n";
+        std::cout << "o1_cnt = " << o1_cnt << "\n";
+        std::cout << "o2_cnt = " << o2_cnt << "\n";
+        std::cout << "o3_cnt = " << o3_cnt << "\n";
+        std::cout << "o4_cnt = " << o4_cnt << "\n";
+        std::cout << "o5_cnt = " << o5_cnt << "\n";
+        std::cout << std::setprecision(7);
+        std::cout << "time1 = " << time1 / o1_cnt << "ms\n";
+        std::cout << "time2 = " << time2 / o2_cnt << "ms\n";
+        std::cout << "time3 = " << time3 / o3_cnt << "ms\n";
+        std::cout << "time4 = " << time4 / o4_cnt << "ms\n";
+        std::cout << "time5 = " << time5 / o5_cnt << "ms\n";
+
     }
 
     // операция o1
     // ищет человека с наибольшим выигрышем от перемещения в другую коалицию
     // возвращает увеличение выигрыша
     double o1() {
+        ++o1_cnt;
         double max_win = INT32_MIN;
         int max_person, max_coalition;
         for (int person = 0; person < n; ++person) {
@@ -148,6 +178,7 @@ public:
     // ищет двух людей с наибольшим выигрышем от перемещения в другие коалиции
     // возвращает увеличение выигрыша
     double o2() {
+        ++o2_cnt;
         int max_first_person, max_second_person;
         int max_to_first, max_to_second;
         double max_win = INT32_MIN;
@@ -196,6 +227,7 @@ public:
     }
 
     double o3() {
+        ++o3_cnt;
         ++time;
         // окончание табу
         while (!tabu_list.empty() && tabu_list.front().second < time) {
@@ -244,6 +276,7 @@ public:
     }
 
     double o4() {
+        ++o4_cnt;
         int max_first_person, max_second_person;
         int to_first, to_second;
         double max_win = INT32_MIN;
@@ -288,6 +321,7 @@ public:
     }
 
     double o5() {
+        ++o5_cnt;
         int person = rand() % n;
         int to_coalition = rand() % k;
         int from_coalition = person_coalition[person];
