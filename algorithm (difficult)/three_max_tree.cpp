@@ -1,19 +1,16 @@
-#include <algorithm>
-#include <iostream>
-#include <iterator>
 #include <vector>
 
-int* merge(
+void merge(
+    int* res,
     const std::vector<double>& data,
     int v,
     const int* l = nullptr,
     const int* r = nullptr
 ) {
-    int res[3] = {INT32_MIN, INT32_MIN, INT32_MIN};
     if (!l) {
         if (!r) {
             res[0] = v;
-            return res;
+            return;
         } else {
             int i = 0;
             int j = 0;
@@ -34,7 +31,7 @@ int* merge(
                     }
                 }
             }
-            return res;
+            return;
         }
     } else {
         if (!r) {
@@ -57,7 +54,7 @@ int* merge(
                     }
                 }
             }
-            return res;
+            return;
         } else {
             int i = 0;
             int j = 0;
@@ -111,7 +108,7 @@ int* merge(
                     }
                 }
             }
-            return res;
+            return;
         }
     }
 }
@@ -133,17 +130,11 @@ public:
             mark[i][0] = mark[i][1] = mark[i][2] = -2e9;
             int v = (i - 1 == home_coalition ? -2e9 : i - 1);
             if (2 * i + 1 < mark.size()) {
-                auto x = merge(data, v, mark[2 * i], mark[2 * i + 1]);
-                mark[i][0] = x[0];
-                mark[i][1] = x[1];
-                mark[i][2] = x[2];
-            } else if (2 * i < mark.size()) {
-                auto x = merge(data, v, mark[2 * i]);
-                mark[i][0] = x[0];
-                mark[i][1] = x[1];
-                mark[i][2] = x[2];
+                merge(mark[i], data, v, mark[2 * i], mark[2 * i + 1]);
+            } else if (2 * i < mark.size()) { 
+                merge(mark[i], data, v, mark[2 * i]);
             } else {
-                mark[i][0] = v;
+                merge(mark[i], data, v);
             }
         }
     }
@@ -162,17 +153,11 @@ public:
             mark[key][0] = mark[key][1] = mark[key][2] = -2e9;
             int v = (key - 1 == home_coalition ? -2e9 : key - 1);
             if (2 * key + 1 < mark.size()) {
-                auto x = merge(data, v, mark[2 * key], mark[2 * key + 1]);
-                mark[key][0] = x[0];
-                mark[key][1] = x[1];
-                mark[key][2] = x[2];
+                merge(mark[key], data, v, mark[2 * key], mark[2 * key + 1]);
             } else if (2 * key < mark.size()) {
-                auto x = merge(data, v, mark[2 * key]);
-                mark[key][0] = x[0];
-                mark[key][1] = x[1];
-                mark[key][2] = x[2];
+                merge(mark[key], data, v, mark[2 * key]);
             } else {
-                mark[key][0] = v;
+                merge(mark[key], data, v);
             }
             key /= 2;
         }
