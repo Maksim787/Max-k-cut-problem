@@ -5,14 +5,16 @@ struct o2Updater {
     const PB_Vector& coalition_interaction;
     const std::vector<std::vector<double>>& w;
     double max_win = INT32_MIN;
-    int max_first_person, max_second_person;
-    int max_to_first, max_to_second;
+    int max_first_person = INT32_MIN, max_second_person = INT32_MIN;
+    int max_to_first = INT32_MIN, max_to_second = INT32_MIN;
 
     o2Updater(const PB_Vector& coalition_interaction, std::vector<std::vector<double>>& w) :
             coalition_interaction(coalition_interaction), w(w) {}
 
     void reset() {
         max_win = INT32_MIN;
+        max_first_person = INT32_MIN, max_second_person = INT32_MIN;
+        max_to_first = INT32_MIN, max_to_second = INT32_MIN;
     }
 
     void update(int first_person, int from_first, int to_first, int second_person, int from_second, int to_second) {
