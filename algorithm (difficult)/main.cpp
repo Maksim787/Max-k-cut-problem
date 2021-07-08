@@ -66,9 +66,10 @@ public:
         best_win = win;
 
         // построение same_point_transform
-        std::vector<std::vector<MaxTree>> same_point_transform_init(n, std::vector<MaxTree>(n));
+        std::vector<std::vector<MaxTree>> same_point_transform_init(n);
         for (int first_person = 0; first_person < n; ++first_person) {
-            for (int second_person = 0; second_person < n; ++second_person) {
+            same_point_transform_init[first_person] = std::vector<MaxTree>(first_person);
+            for (int second_person = 0; second_person < first_person; ++second_person) {
                 std::vector<double> max_tree_init(k);
                 for (int coalition = 0; coalition < k; ++coalition) {
                     max_tree_init[coalition] = coalition_interaction[first_person][coalition] +
@@ -192,6 +193,19 @@ public:
         o2_updater.reset();
         for (int first_person = 0; first_person < n; ++first_person) {
             int from_first = person_coalition[first_person];
+            for (int second_person = 0; second_person < first_person; ++second_person) {
+                int from_second = person_coalition[second_person];
+                int to_first, to_second;
+
+                // case 1 + case 5
+                // два игрока идут в одну коалицию
+                // SamePointTransform
+                to_first = to_second = same_point_transform[first_person][second_person].max();
+                o2_updater.update(first_person, from_first, to_first, second_person, from_second, to_second);
+            }
+        }
+        for (int first_person = 0; first_person < n; ++first_person) {
+            int from_first = person_coalition[first_person];
             for (int second_person = 0; second_person < n; ++second_person) {
                 if (first_person == second_person) {
                     continue;
@@ -200,12 +214,6 @@ public:
                 int to_first, to_second;
                 const int* potential_to_first = coalition_interaction[first_person].max();
                 const int* potential_to_second = coalition_interaction[second_person].max();
-
-                // case 1 + case 5
-                // два игрока идут в одну коалицию
-                // SamePointTransform
-                to_first = to_second = same_point_transform[first_person][second_person].max();
-                o2_updater.update(first_person, from_first, to_first, second_person, from_second, to_second);
 
                 if (from_first == from_second) {
                     // case 3
