@@ -20,7 +20,10 @@ void merge(
                     res[i + j] = r[i];
                     ++i;
                 } else {
-                    if (r[i] == INT32_MIN || data[v] >= data[r[i]]) {
+                    if (v == INT32_MIN) {
+                         res[i + j] = r[i];
+                         ++i;
+                    } else if (r[i] == INT32_MIN || data[v] >= data[r[i]]) {
                         res[i + j] = v;
                         ++j;
                     } else {
@@ -40,7 +43,10 @@ void merge(
                     res[i + j] = l[i];
                     ++i;
                 } else {
-                    if (l[i] == INT32_MIN || data[v] >= data[l[i]]) {
+                    if (v == INT32_MIN) {
+                        res[i + j] = l[i];
+                        ++i;
+                    } else if (l[i] == INT32_MIN || data[v] >= data[l[i]]) {
                         res[i + j] = v;
                         ++j;
                     } else {
@@ -70,7 +76,21 @@ void merge(
                         ++j;
                     }
                 } else {
-                    if (r[j] == l[i] && l[i] == INT32_MIN) {
+                    if (v == INT32_MIN) {
+                        if (r[j] == INT32_MIN) {
+                            res[i + j + k] = l[i];
+                            ++i;
+                        } else if (l[i] == INT32_MIN) {
+                            res[i + j + k] = r[j];
+                            ++j;
+                        } else if (data[l[i]] >= data[r[j]]) {
+                            res[i + j + k] = l[i];
+                            ++i;
+                        } else {
+                            res[i + j + k] = r[j];
+                            ++j;
+                        }
+                    } else if (r[j] == l[i] && l[i] == INT32_MIN) {
                         res[i + j + k] = v;
                         ++k;
                     } else if (r[j] == INT32_MIN) {
