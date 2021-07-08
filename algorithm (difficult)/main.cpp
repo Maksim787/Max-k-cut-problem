@@ -172,9 +172,11 @@ public:
     }
 
     void print_coalitions() {
+        std::ofstream file("../output.txt");
         std::cout << "n = " << n << ", " << "k = " << k << "\n";
         for (int person = 0; person < n; ++person) {
             std::cout << person << ": " << person_coalition_answer[person] << "\n";
+            file << person << " " << person_coalition_answer[person] << "\n";
         }
         std::cout << "best_win = " << best_win << "\n";
         std::cout << "o1_cnt = " << o1_cnt << "\n";
@@ -444,9 +446,10 @@ int main() {
     int xi = 10;
     int gamma = std::max(1, static_cast<int>(0.1 * n));
     CoalitionApprox s(w, n, k, p, omega, xi, gamma);
-    int n_iter = 20;
+    int n_iter = 100;
     s.run(n_iter);
     s.print_coalitions();
+    std::cin.get();
 
     return 0;
 }
