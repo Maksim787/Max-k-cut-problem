@@ -183,11 +183,12 @@ public:
         std::cout << "o4_cnt = " << o4_cnt << "\n";
         std::cout << "o5_cnt = " << o5_cnt << "\n";
         std::cout << std::setprecision(7);
-        std::cout << "time1 = " << time1 / o1_cnt << "ms\n";
-        std::cout << "time2 = " << time2 / o2_cnt << "ms\n";
-        std::cout << "time3 = " << time3 / o3_cnt << "ms\n";
-        std::cout << "time4 = " << time4 / o4_cnt << "ms\n";
-        std::cout << "time5 = " << time5 / o5_cnt << "ms\n";
+        std::cout << "time1 / o1_cnt = " << time1 / o1_cnt << " ms\n";
+        std::cout << "time2 / o2_cnt = " << time2 / o2_cnt << " ms\n";
+        std::cout << "time3 / o3_cnt = " << time3 / o3_cnt << " ms\n";
+        std::cout << "time4 / o4_cnt = " << time4 / o4_cnt << " ms\n";
+        std::cout << "time5 / o5_cnt = " << time5 / o5_cnt << " ms\n";
+        std::cout << "total_time = " << time1 + time2 + time3 + time4 + time5 << " ms\n";
     }
 
     // операция o1
@@ -443,7 +444,7 @@ int main() {
     int xi = 10;
     int gamma = std::max(1, static_cast<int>(0.1 * n));
     CoalitionApprox s(w, n, k, p, omega, xi, gamma);
-    int n_iter = 10;
+    int n_iter = 20;
     s.run(n_iter);
     s.print_coalitions();
 
