@@ -130,7 +130,7 @@ public:
         std::cout << "n = " << n << ", " << "k = " << k << "\n";
         for (int person = 0; person < n; ++person) {
             std::cout << person << ": " << person_coalition_answer[person] << "\n";
-            file << person << " " << person_coalition_answer[person] << "\n";
+            file << person_coalition_answer[person] << " ";
         }
         std::cout << "best_win = " << best_win << "\n";
         std::cout << "o1_cnt = " << o1_cnt << "\n";
@@ -242,7 +242,7 @@ public:
         double max_win = INT32_MIN;
         int max_person, max_coalition;
         for (int person = 0; person < n; ++person) {
-            if (tabu_set.contains(person)) {
+            if (tabu_set.count(person) != 0) {
                 continue;
             }
             for (int to_coalition = 0; to_coalition < k; ++to_coalition) {
