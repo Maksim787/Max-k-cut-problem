@@ -23,6 +23,7 @@ public:
     int xi;
     // gamma - число применений o5 подряд
     int gamma;
+    const double eps = 1e-9;
     double win = 0;
     double best_win = 0;
     int not_improved_cnt = 0;
@@ -67,7 +68,7 @@ public:
                 inc_win = o1();
                 auto end = std::chrono::steady_clock::now();
                 time1 += std::chrono::duration_cast<std::chrono::nanoseconds>(end - begin).count() / 1e6;
-                if (inc_win <= 0) {
+                if (inc_win <= eps) {
                     break;
                 }
                 win += inc_win;
@@ -78,7 +79,7 @@ public:
                 inc_win = o2();
                 auto end = std::chrono::steady_clock::now();
                 time2 += std::chrono::duration_cast<std::chrono::nanoseconds>(end - begin).count() / 1e6;
-                if (inc_win <= 0) {
+                if (inc_win <= eps) {
                     break;
                 }
                 win += inc_win;
@@ -166,7 +167,7 @@ public:
                 }
             }
         }
-        if (max_win <= 0) {
+        if (max_win <= eps) {
             return max_win;
         }
 #ifdef OPERATION_OUTPUT
@@ -186,10 +187,7 @@ public:
         double max_win = INT32_MIN;
         for (int first_person = 0; first_person < n; ++first_person) {
             int from_first = person_coalition[first_person];
-            for (int second_person = 0; second_person < n; ++second_person) {
-                if (first_person == second_person) {
-                    continue;
-                }
+            for (int second_person = 0; second_person < first_person; ++second_person) {
                 for (int to_first = 0; to_first < k; ++to_first) {
                     if (to_first == from_first) {
                         continue;
@@ -217,7 +215,7 @@ public:
                 }
             }
         }
-        if (max_win <= 0) {
+        if (max_win <= eps) {
             return max_win;
         }
 #ifdef OPERATION_OUTPUT
