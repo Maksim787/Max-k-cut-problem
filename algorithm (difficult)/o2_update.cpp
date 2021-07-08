@@ -16,6 +16,9 @@ struct o2Updater {
     }
 
     void update(int first_person, int from_first, int to_first, int second_person, int from_second, int to_second) {
+        if (to_second == INT32_MIN || to_first == INT32_MIN) {
+            return;
+        }
         double new_win =
                 coalition_interaction[first_person][to_first] -
                 coalition_interaction[first_person][from_first] +
