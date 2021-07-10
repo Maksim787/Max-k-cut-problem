@@ -1,0 +1,194 @@
+1	Norway	0.957
+2	Ireland	0.955
+3	Switzerland	0.955
+4	Hong Kong	0.949
+5	Iceland	0.949
+6	Germany	0.947
+7	Sweden	0.945
+8	Australia	0.944
+9	Netherlands	0.944
+10	Denmark	0.940
+11	Finland	0.938
+12	Singapore	0.938
+13	United Kingdom	0.932
+14	Belgium	0.931
+15	New Zealand	0.931
+16	Canada	0.929
+17	United States	0.926
+18	Austria	0.922
+19	Israel	0.919
+20	Japan	0.919
+21	Liechtenstein	0.919
+22	Slovenia	0.917
+23	South Korea	0.916
+24	Luxembourg	0.916
+25	Spain	0.904
+26	France	0.901
+27	Czech Republic	0.900
+28	Malta	0.895
+29	Estonia	0.892
+30	Italy	0.892
+31	United Arab Emirates	0.890
+32	Greece	0.888
+33	Cyprus	0.887
+34	Lithuania	0.882
+35	Poland	0.880
+36	Andorra	0.868
+37	Latvia	0.866
+38	Portugal	0.864
+39	Slovakia	0.860
+40	Hungary	0.854
+41	Saudi Arabia	0.854
+42	Bahrain	0.852
+43	Chile	0.851
+44	Croatia	0.851
+45	Qatar	0.848
+46	Argentina	0.845
+47	Brunei	0.838
+48	Montenegro	0.829
+49	Romania	0.828
+50	Palau	0.826
+51	Kazakhstan	0.825
+52	Russia	0.824
+53	Belarus	0.823
+54	Turkey	0.820
+55	Uruguay	0.817
+56	Bulgaria	0.816
+57	Panama	0.815
+58	Bahamas	0.814
+59	Barbados	0.814
+60	Oman	0.813
+61	Georgia	0.812
+62	Costa Rica	0.810
+63	Malaysia	0.810
+64	Kuwait	0.806
+65	Serbia	0.806
+66	Mauritius	0.804
+67	Seychelles	0.796
+68	Trinidad and Tobago	0.796
+69	Albania	0.795
+70	Cuba	0.783
+71	Iran	0.783
+72	Sri Lanka	0.782
+73	Bosnia and Herzegovina	0.780
+74	Grenada	0.779
+75	Mexico	0.779
+76	Saint Kitts and Nevis	0.779
+77	Antigua and Barbuda	0.778
+78	Peru	0.777
+79	Thailand	0.777
+80	Armenia	0.776
+81	North Macedonia	0.774
+82	Colombia	0.767
+83	Brazil	0.765
+84	China	0.761
+85	Ecuador	0.759
+86	Saint Lucia	0.759
+87	Azerbaijan	0.756
+88	Dominican Republic	0.756
+89	Moldova	0.750
+90	Algeria	0.748
+91	Lebanon	0.744
+92	Fiji	0.743
+93	Dominica	0.742
+94	Maldives	0.740
+95	Tunisia	0.740
+96	Saint Vincent and the Grenadines	0.738
+97	Suriname	0.738
+98	Mongolia	0.737
+99	Botswana	0.735
+100	Jamaica	0.734
+101	Jordan	0.729
+102	Paraguay	0.728
+103	Tonga	0.725
+104	Libya	0.724
+105	Uzbekistan	0.720
+106	Bolivia	0.718
+107	Indonesia	0.718
+108	Philippines	0.718
+109	Belize	0.716
+110	Samoa	0.715
+111	Turkmenistan	0.715
+112	Venezuela	0.711
+113	South Africa	0.709
+114	Государство Палестина	0.708
+115	Egypt	0.707
+116	Marshall Islands	0.704
+117	Vietnam	0.704
+118	Gabon	0.703
+119	Kyrgyzstan	0.697
+120	Morocco	0.686
+121	Guyana	0.682
+122	Iraq	0.674
+123	El Salvador	0.673
+124	Tajikistan	0.668
+125	Cape Verde	0.665
+126	Guatemala	0.663
+127	Nicaragua	0.660
+128	Bhutan	0.654
+129	Namibia	0.646
+130	India	0.645
+131	Honduras	0.634
+132	Bangladesh	0.632
+133	Kiribati	0.630
+134	São Tomé and Príncipe	0.625
+135	Micronesia	0.620
+136	Laos	0.613
+137	Eswatini	0.611
+138	Ghana	0.611
+139	Vanuatu	0.609
+140	East Timor	0.606
+141	Nepal	0.602
+142	Kenya	0.601
+143	Cambodia	0.594
+144	Equatorial Guinea	0.592
+145	Zambia	0.584
+146	Myanmar	0.583
+147	Angola	0.581
+148	Congo, Republic of the	0.574
+149	Zimbabwe	0.571
+150	Solomon Islands	0.567
+151	Syria	0.567
+152	Cameroon	0.563
+153	Pakistan	0.557
+154	Papua New Guinea	0.555
+155	Comoros	0.554
+156	Mauritania	0.546
+157	Benin	0.545
+158	Uganda	0.544
+159	Rwanda	0.543
+160	Nigeria	0.539
+161	Ivory Coast	0.538
+162	Tanzania	0.529
+163	Madagascar	0.528
+164	Lesotho	0.527
+165	Djibouti	0.524
+166	Togo	0.515
+167	Senegal	0.512
+168	Afghanistan	0.511
+169	Haiti	0.510
+170	Sudan	0.510
+171	The Gambia	0.496
+172	Ethiopia	0.485
+173	Malawi	0.483
+174	Congo, Democratic Republic of the	0.480
+175	Guinea-Bissau	0.480
+176	Liberia	0.480
+177	Guinea	0.477
+178	Yemen	0.470
+179	Eritrea	0.459
+180	Mozambique	0.456
+181	Sierra Leone	0.452
+182	Burkina Faso	0.452
+183	Mali	0.434
+184	Burundi	0.433
+185	South Sudan	0.433
+186	Chad	0.398
+187	Central African Republic	0.397
+188	Niger	0.394
+189	Monaco	0.946
+190	San Marino	0.944
+191	КНДР	0.766
+192	Nauru	0.663
+193	Tuvalu	0.583
+194	Somalia	0.284
