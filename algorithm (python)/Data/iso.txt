@@ -256,3 +256,4 @@ COG  Congo, Republic of the
 COD  Congo, Democratic Republic of the
 PRK  КНДР
 GMB  The Gambia
+SOM  Somalia
