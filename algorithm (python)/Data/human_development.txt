@@ -192,3 +192,4 @@
 192	Nauru	0.663
 193	Tuvalu	0.583
 194	Somalia	0.284
+195	Ukraine	0.779
