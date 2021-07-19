@@ -137,7 +137,7 @@ public:
 #endif
 #ifdef op2
             // пока улучшается делаем o2
-//            build_same_point_transform();
+            build_same_point_transform();
             while (true) {
                 inc_win = o2();
                 if (inc_win <= eps) {
@@ -353,8 +353,8 @@ public:
 #ifdef OPERATION_OUTPUT
         std::cout << "o2" << std::endl;
 #endif
-        move(o2_updater.max_first_person, o2_updater.max_to_first);
-        move(o2_updater.max_second_person, o2_updater.max_to_second);
+        move(o2_updater.max_first_person, o2_updater.max_to_first, true);
+        move(o2_updater.max_second_person, o2_updater.max_to_second, true);
         return o2_updater.max_win;
     }
 
@@ -456,7 +456,7 @@ public:
         return new_win;
     }
 
-    void move(int moved_person, int to_coalition) {
+    void move(int moved_person, int to_coalition, bool update_same_point_transform = false) {
 #ifdef MOVE_OUTPUT
         std::cout << "move:\nmoved_person = " << moved_person << "\n";
         std::cout << "from_coalition = " << person_coalition[moved_person] << "\n";
@@ -466,7 +466,9 @@ public:
         assert(person_coalition[moved_person] != to_coalition);
 #endif
         pb_vector.update(moved_person, to_coalition);
-        same_point_transform.update(moved_person, to_coalition);
+        if (update_same_point_transform) {
+            same_point_transform.update(moved_person, to_coalition);
+        }
         person_coalition[moved_person] = to_coalition;
     }
 
