@@ -1,4 +1,5 @@
 #include <cstdlib>
+#include <fstream>
 #include <iostream>
 #include <vector>
 
@@ -16,12 +17,13 @@ int main() {
             graph[i][j] = graph[j][i];
         }
     }
-    std::cout << n << " " << k << "\n";
+    std::ofstream file("../input.txt");
+    file << n << " " << k << "\n";
     for (int i = 0; i < n; ++i) {
         for (int j = 0; j < n; ++j) {
-            std::cout << graph[i][j] << " ";
+            file << graph[i][j] << " ";
         }
-        std::cout << "\n";
+        file << "\n";
     }
 
     return 0;
