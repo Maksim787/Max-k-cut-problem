@@ -1,7 +1,9 @@
 #include "potential_benefits.cpp"
 #include "same_point_transformations.cpp"
 #include "o2_update.cpp"
+#include "timer.cpp"
 
+#include <cassert>
 #include <chrono>
 #include <cstdlib>
 #include <deque>
@@ -11,6 +13,7 @@
 #include <unordered_set>
 #include <vector>
 
+#define DEBUG
 //#define MOVE_OUTPUT
 //#define OPERATION_OUTPUT
 
@@ -39,10 +42,9 @@ public:
     int not_improved_cnt = 0;
     int time = 0;
     int o1_cnt = 0, o2_cnt = 0, o3_cnt = 0, o4_cnt = 0, o5_cnt = 0;
-    double time1 = 0, time2 = 0, time3 = 0, time4 = 0, time5 = 0;
+    double o1_time = 0, o2_time = 0, o3_time = 0, o4_time = 0, o5_time = 0;
     std::vector<std::vector<double>> w;
-//    std::vector<std::vector<double>> coalition_interaction; // arr[i][j] сумма рёбер из i игрока в j коалицию
-    PB_Vector coalition_interaction;
+    PB_Vector pb_vector;
     SamePointTransform same_point_transform;
     o2Updater o2_updater;
     std::vector<int> person_coalition; // arr[i] - коалиция i игрока
@@ -50,27 +52,50 @@ public:
     std::unordered_set<int> tabu_set;
     std::deque<std::pair<int, int>> tabu_list; // (игрок, время окончания бана), снимаем бан, если time > время окончания бана
 
-    CoalitionApprox(std::vector<std::vector<double>> input_w, int n, int k, double p, int omega, int xi, int gamma) :
+    CoalitionApprox(std::vector<std::vector<double>> input_w, int n, int k, double p, int omega, int xi, int gamma,
+                    bool all_in_one = false) :
             n(n), k(k), p(p), omega(omega), xi(xi), gamma(gamma),
             w(std::move(input_w)),
-            coalition_interaction(w), same_point_transform(w), o2_updater(coalition_interaction, w),
+            pb_vector(w), same_point_transform(w), o2_updater(pb_vector, w),
             person_coalition(n),
             person_coalition_answer(n) {
         // все в 0 коалиции
-        // построение coalition_interaction
-        std::vector<ThreeMaxTree> coalition_interaction_init(n);
+        if (all_in_one) {
+            for (int person = 0; person < n; ++person) {
+                person_coalition[person] = 0;
+            }
+        } else {
+            // все в случайных коалициях
+            for (int person = 0; person < n; ++person) {
+                person_coalition[person] = rand() % k;
+            }
+        }
+        person_coalition_answer = person_coalition;
+        // построение pb_vector
+        std::vector<ThreeMaxTree> pb_vector_init(n);
         for (int first_person = 0; first_person < n; ++first_person) {
             std::vector<double> three_max_tree_init(k);
             for (int second_person = 0; second_person < n; ++second_person) {
-                three_max_tree_init[0] += w[first_person][second_person];
-                win += w[first_person][second_person];
+                three_max_tree_init[person_coalition[second_person]] += w[first_person][second_person];
+                if (person_coalition[first_person] == person_coalition[second_person] && first_person < second_person) {
+                    win += w[first_person][second_person];
+                }
             }
-            coalition_interaction_init[first_person].build(std::move(three_max_tree_init), 0);
+            pb_vector_init[first_person].build(std::move(three_max_tree_init), person_coalition[first_person]);
         }
-        coalition_interaction.build(std::move(coalition_interaction_init));
-        win /= 2;
+        pb_vector.build(std::move(pb_vector_init));
         best_win = win;
 
+        // построение same_point_transform
+        build_same_point_transform();
+#ifdef DEBUG
+        double real_win = get_real_win();
+        assert(real_win - eps < win);
+        assert(real_win + eps > win);
+#endif
+    }
+
+    void build_same_point_transform() {
         // построение same_point_transform
         std::vector<std::vector<MaxTree>> same_point_transform_init(n);
         for (int first_person = 0; first_person < n; ++first_person) {
@@ -78,8 +103,8 @@ public:
             for (int second_person = 0; second_person < first_person; ++second_person) {
                 std::vector<double> max_tree_init(k);
                 for (int coalition = 0; coalition < k; ++coalition) {
-                    max_tree_init[coalition] = coalition_interaction[first_person][coalition] +
-                                               coalition_interaction[second_person][coalition];
+                    max_tree_init[coalition] = pb_vector[first_person][coalition] +
+                                               pb_vector[second_person][coalition];
                 }
                 same_point_transform_init[first_person][second_person].build(std::move(max_tree_init), 0, 0);
             }
@@ -88,37 +113,42 @@ public:
     }
 
     static double random() {
-        return static_cast<double>(rand() % 1000) / 1000;
+        return static_cast<double>(rand()) / RAND_MAX;
     }
 
     void run(int n_iter) {
-        for (int i = 0; i < n_iter; ++i) {
-            std::cout << i << " ИТЕРАЦИЯ" << std::endl;
+        for (int j = 0; j < n_iter; ++j) {
+            std::cout << j + 1 << " ITERATION" << std::endl;
             double inc_win;
 #ifdef op1
             // пока улучшается делаем o1
             while (true) {
-                auto begin = std::chrono::steady_clock::now();
                 inc_win = o1();
-                auto end = std::chrono::steady_clock::now();
-                time1 += std::chrono::duration_cast<std::chrono::nanoseconds>(end - begin).count() / 1e6;
                 if (inc_win <= eps) {
                     break;
                 }
                 win += inc_win;
+#ifdef DEBUG
+                double real_win = get_real_win();
+                assert(real_win - eps < win);
+                assert(real_win + eps > win);
+#endif
             }
 #endif
 #ifdef op2
             // пока улучшается делаем o2
+//            build_same_point_transform();
             while (true) {
-                auto begin = std::chrono::steady_clock::now();
                 inc_win = o2();
-                auto end = std::chrono::steady_clock::now();
-                time2 += std::chrono::duration_cast<std::chrono::nanoseconds>(end - begin).count() / 1e6;
                 if (inc_win <= eps) {
                     break;
                 }
                 win += inc_win;
+#ifdef DEBUG
+                double real_win = get_real_win();
+                assert(real_win - eps < win);
+                assert(real_win + eps > win);
+#endif
             }
 #endif
             // если улучшили, обнуляем счётчик времени не улучшения
@@ -129,7 +159,7 @@ public:
             } else {
                 ++not_improved_cnt;
             }
-            if (i == n_iter - 1) {
+            if (j == n_iter - 1) {
                 return;
             }
 
@@ -142,29 +172,30 @@ public:
             while (move_cnt < omega && win <= last_local_optimum) {
                 if (random() < p) {
 #ifdef op3
-                    auto begin = std::chrono::steady_clock::now();
                     win += o3();
-                    auto end = std::chrono::steady_clock::now();
-                    time3 += std::chrono::duration_cast<std::chrono::nanoseconds>(end - begin).count() / 1e6;
 #endif
                 } else {
 #ifdef op4
-                    auto begin = std::chrono::steady_clock::now();
                     win += o4();
-                    auto end = std::chrono::steady_clock::now();
-                    time4 += std::chrono::duration_cast<std::chrono::nanoseconds>(end - begin).count() / 1e6;
 #endif
                 }
+#ifdef DEBUG
+                double real_win = get_real_win();
+                assert(real_win - eps < win);
+                assert(real_win + eps > win);
+#endif
                 ++move_cnt;
             }
 #endif
 #ifdef op5
             if (not_improved_cnt >= xi) {
-                for (int j = 0; j < gamma; ++j) {
-                    auto begin = std::chrono::steady_clock::now();
+                for (int i = 0; i < gamma; ++i) {
                     win += o5();
-                    auto end = std::chrono::steady_clock::now();
-                    time5 += std::chrono::duration_cast<std::chrono::nanoseconds>(end - begin).count() / 1e6;
+#ifdef DEBUG
+                    double real_win = get_real_win();
+                    assert(real_win - eps < win);
+                    assert(real_win + eps > win);
+#endif
                 }
                 not_improved_cnt = xi;
             }
@@ -186,26 +217,26 @@ public:
         std::cout << "o4_cnt = " << o4_cnt << "\n";
         std::cout << "o5_cnt = " << o5_cnt << "\n";
         std::cout << std::setprecision(7);
-        std::cout << "time1 / o1_cnt = " << time1 / o1_cnt << " ms\n";
-        std::cout << "time2 / o2_cnt = " << time2 / o2_cnt << " ms\n";
-        std::cout << "time3 / o3_cnt = " << time3 / o3_cnt << " ms\n";
-        std::cout << "time4 / o4_cnt = " << time4 / o4_cnt << " ms\n";
-        std::cout << "time5 / o5_cnt = " << time5 / o5_cnt << " ms\n";
-        std::cout << "total_time = " << time1 + time2 + time3 + time4 + time5 << " ms\n";
+        std::cout << "o1_time / o1_cnt = " << o1_time / o1_cnt << " ms\n";
+        std::cout << "o2_time / o2_cnt = " << o2_time / o2_cnt << " ms\n";
+        std::cout << "o3_time / o3_cnt = " << o3_time / o3_cnt << " ms\n";
+        std::cout << "o4_time / o4_cnt = " << o4_time / o4_cnt << " ms\n";
+        std::cout << "o5_time / o5_cnt = " << o5_time / o5_cnt << " ms\n";
+        std::cout << "total_time = " << o1_time + o2_time + o3_time + o4_time + o5_time << " ms\n";
     }
 
     // операция o1
     // ищет человека с наибольшим выигрышем от перемещения в другую коалицию
     // возвращает увеличение выигрыша
     double o1() {
-        ++o1_cnt;
+        Timer timer(o1_cnt, o1_time);
         double max_win = INT32_MIN;
         int max_person, max_coalition;
         for (int person = 0; person < n; ++person) {
             int from_coalition = person_coalition[person];
-            int to_coalition = coalition_interaction[person].max()[0];
+            int to_coalition = pb_vector[person].max()[0];
             double new_win =
-                    coalition_interaction[person][to_coalition] - coalition_interaction[person][from_coalition];
+                    pb_vector[person][to_coalition] - pb_vector[person][from_coalition];
             if (new_win > max_win) {
                 max_win = new_win;
                 max_person = person;
@@ -226,7 +257,7 @@ public:
     // ищет двух людей с наибольшим выигрышем от перемещения в другие коалиции
     // возвращает увеличение выигрыша
     double o2() {
-        ++o2_cnt;
+        Timer timer(o2_cnt, o2_time);
         o2_updater.reset();
         for (int first_person = 0; first_person < n; ++first_person) {
             int from_first = person_coalition[first_person];
@@ -238,6 +269,9 @@ public:
                 // два игрока идут в одну коалицию
                 // SamePointTransform
                 to_first = to_second = same_point_transform[first_person][second_person].max();
+                if (to_first == from_first || to_second == from_second) {
+                    continue;
+                }
                 o2_updater.update(first_person, from_first, to_first, second_person, from_second, to_second);
             }
         }
@@ -249,8 +283,8 @@ public:
                 }
                 int from_second = person_coalition[second_person];
                 int to_first, to_second;
-                const int* potential_to_first_ptr = coalition_interaction[first_person].max();
-                const int* potential_to_second_ptr = coalition_interaction[second_person].max();
+                const int* potential_to_first_ptr = pb_vector[first_person].max();
+                const int* potential_to_second_ptr = pb_vector[second_person].max();
                 int potential_to_first[3];
                 int potential_to_second[3];
                 std::copy(potential_to_first_ptr, potential_to_first_ptr + 3, potential_to_first);
@@ -304,7 +338,8 @@ public:
                             to_first = one_ind;
                             to_second = two_ind;
                             if (to_first != from_second && to_second != from_first && to_first != to_second) {
-                                o2_updater.update(first_person, from_first, to_first, second_person, from_second, to_second);
+                                o2_updater.update(first_person, from_first, to_first, second_person, from_second,
+                                                  to_second);
                                 break;
                             }
                         }
@@ -324,7 +359,7 @@ public:
     }
 
     double o3() {
-        ++o3_cnt;
+        Timer timer(o3_cnt, o3_time);
         ++time;
         // окончание табу
         while (!tabu_list.empty() && tabu_list.front().second < time) {
@@ -341,9 +376,9 @@ public:
                 continue;
             }
             int from_coalition = person_coalition[person];
-            int to_coalition = coalition_interaction[person].max()[0];
+            int to_coalition = pb_vector[person].max()[0];
             double new_win =
-                    coalition_interaction[person][to_coalition] - coalition_interaction[person][from_coalition];
+                    pb_vector[person][to_coalition] - pb_vector[person][from_coalition];
             if (new_win > max_win) {
                 max_win = new_win;
                 max_person = person;
@@ -372,7 +407,7 @@ public:
     }
 
     double o4() {
-        ++o4_cnt;
+        Timer timer(o4_cnt, o4_time);
         o2_updater.reset();
         do {
             // случайные коалиции, в которые пойдут игроки
@@ -404,13 +439,16 @@ public:
     }
 
     double o5() {
-        ++o5_cnt;
+        Timer timer(o5_cnt, o5_time);
         int person = rand() % n;
         int to_coalition = rand() % k;
         int from_coalition = person_coalition[person];
+        if (from_coalition == to_coalition) {
+            return 0;
+        }
         double new_win =
-                coalition_interaction[person][to_coalition] -
-                coalition_interaction[person][from_coalition];
+                pb_vector[person][to_coalition] -
+                pb_vector[person][from_coalition];
 #ifdef OPERATION_OUTPUT
         std::cout << "o5" << std::endl;
 #endif
@@ -424,9 +462,24 @@ public:
         std::cout << "from_coalition = " << person_coalition[moved_person] << "\n";
         std::cout << "to_coalition = " << to_coalition << "\n" << std::endl;
 #endif
-        coalition_interaction.update(moved_person, to_coalition);
+#ifdef DEBUG
+        assert(person_coalition[moved_person] != to_coalition);
+#endif
+        pb_vector.update(moved_person, to_coalition);
         same_point_transform.update(moved_person, to_coalition);
         person_coalition[moved_person] = to_coalition;
+    }
+
+    double get_real_win() {
+        double real_win = 0;
+        for (int i = 0; i < n; ++i) {
+            for (int j = 0; j < i; ++j) {
+                if (person_coalition[i] == person_coalition[j]) {
+                    real_win += w[i][j];
+                }
+            }
+        }
+        return real_win;
     }
 };
 
@@ -450,7 +503,7 @@ int main() {
     int n_iter = 100;
     s.run(n_iter);
     s.print_coalitions();
-    std::cin.get();
+//    std::cin.get();
 
     return 0;
 }
