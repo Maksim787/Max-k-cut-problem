@@ -14,8 +14,8 @@
 #include <vector>
 
 #define DEBUG
-//#define MOVE_OUTPUT
-//#define OPERATION_OUTPUT
+#define MOVE_OUTPUT
+#define OPERATION_OUTPUT
 
 #define op1
 #define op2
@@ -87,7 +87,7 @@ public:
         best_win = win;
 
         // построение same_point_transform
-        build_same_point_transform();
+        // build_same_point_transform();
 #ifdef DEBUG
         double real_win = get_real_win();
         assert(real_win - eps < win);
@@ -158,9 +158,6 @@ public:
                 not_improved_cnt = 0;
             } else {
                 ++not_improved_cnt;
-            }
-            if (j == n_iter - 1) {
-                return;
             }
 
             double last_local_optimum = win;
@@ -269,9 +266,9 @@ public:
                 // два игрока идут в одну коалицию
                 // SamePointTransform
                 to_first = to_second = same_point_transform[first_person][second_person].max();
-                if (to_first == from_first || to_second == from_second) {
-                    continue;
-                }
+//                if (to_first == from_first || to_second == from_second) {
+//                    continue;
+//                }
                 o2_updater.update(first_person, from_first, to_first, second_person, from_second, to_second);
             }
         }
@@ -282,13 +279,9 @@ public:
                     continue;
                 }
                 int from_second = person_coalition[second_person];
+                const int* potential_to_first = pb_vector[first_person].max();
+                const int* potential_to_second = pb_vector[second_person].max();
                 int to_first, to_second;
-                const int* potential_to_first_ptr = pb_vector[first_person].max();
-                const int* potential_to_second_ptr = pb_vector[second_person].max();
-                int potential_to_first[3];
-                int potential_to_second[3];
-                std::copy(potential_to_first_ptr, potential_to_first_ptr + 3, potential_to_first);
-                std::copy(potential_to_second_ptr, potential_to_second_ptr + 3, potential_to_second);
                 if (from_first == from_second) {
                     // case 3
                     // два игрока из одной коалиции идут в разные коалиции
@@ -333,14 +326,13 @@ public:
 
                     // case 7
                     // первый и второй идут из разных в разные
-                    for (int one_ind : potential_to_first) {
-                        for (int two_ind : potential_to_second) {
-                            to_first = one_ind;
-                            to_second = two_ind;
+                    for (int one_ind = 0; one_ind < 3; ++one_ind) {
+                        to_first = potential_to_first[one_ind];
+                        for (int two_ind = 0; two_ind < 3; ++two_ind) {
+                            to_second = potential_to_second[two_ind];
                             if (to_first != from_second && to_second != from_first && to_first != to_second) {
                                 o2_updater.update(first_person, from_first, to_first, second_person, from_second,
                                                   to_second);
-                                break;
                             }
                         }
                     }
