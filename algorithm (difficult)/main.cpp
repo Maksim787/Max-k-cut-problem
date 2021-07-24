@@ -13,9 +13,9 @@
 #include <unordered_set>
 #include <vector>
 
-#define DEBUG
-#define MOVE_OUTPUT
-#define OPERATION_OUTPUT
+//#define DEBUG
+//#define MOVE_OUTPUT
+//#define OPERATION_OUTPUT
 
 #define op1
 #define op2
@@ -266,9 +266,9 @@ public:
                 // два игрока идут в одну коалицию
                 // SamePointTransform
                 to_first = to_second = same_point_transform[first_person][second_person].max();
-//                if (to_first == from_first || to_second == from_second) {
-//                    continue;
-//                }
+                if (to_first == from_first || to_second == from_second) {
+                    continue;
+                }
                 o2_updater.update(first_person, from_first, to_first, second_person, from_second, to_second);
             }
         }
